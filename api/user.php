@@ -24,7 +24,7 @@
       // {"username":"joe","password":"joejoejoe"}
       include "connection.php";
       $data = json_decode($json, true);
-      $sql = "SELECT * FROM tbl_user WHERE (user_username = :username OR user_email = :username) AND BINARY user_password = :password";
+      $sql = "SELECT * FROM tbl_user WHERE user_username = :username AND BINARY user_password = :password";
       $stmt = $conn->prepare($sql);
       $stmt->bindParam(":username", $data["username"]);
       $stmt->bindParam(":password", $data["password"]);
@@ -33,6 +33,16 @@
       return $result ? json_encode($result) : 0;
     }
 
+    function getContact($json)
+    {
+      include "connection.php";
+      $json = json_decode($json, true);
+      $sql = "SELECT * FROM tbl_contact WHERE con_userId = :userId";
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(":userId", $json["userId"]);
+      $stmt->execute();
+      return $stmt->rowCount() > 0 ? json_encode($stmt->fetchAll(PDO::FETCH_ASSOC)) : 0;
+    }
   } //user
 
   function recordExists($value, $table, $column)
@@ -57,5 +67,8 @@
       break;
     case "signup":
       echo $user->signup($json);
+      break;
+    case "getContact":
+      echo $user->getContact($json);
       break;
   }
