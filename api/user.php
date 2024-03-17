@@ -33,6 +33,20 @@
       return $result ? json_encode($result) : 0;
     }
 
+    function addContact($json){
+      include "connection.php";
+      $json = json_decode($json, true);
+      $sql = "INSERT INTO tbl_contact(con_userId, con_fullName, con_contactNumber, con_email) 
+      VALUES(:userId, :fullName, :contactNumber, :email)";
+      $stmt = $conn->prepare($sql);
+      $stmt->bindParam(":userId", $json["userId"]);
+      $stmt->bindParam(":fullName", $json["fullName"]);
+      $stmt->bindParam(":contactNumber", $json["contactNumber"]);
+      $stmt->bindParam(":email", $json["email"]);
+      $stmt->execute();
+      return $stmt->rowCount() > 0 ? 1 : 0;
+    }
+
     function getContact($json)
     {
       include "connection.php";
@@ -70,5 +84,8 @@
       break;
     case "getContact":
       echo $user->getContact($json);
+      break;
+    case "addContact":
+      echo $user->addContact($json);
       break;
   }
